@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Customisation Tools — Workshop Guide · susannedrews.com</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: #f5f5f3;
+    min-height: 100vh;
+    padding: 2rem 1rem 3rem;
+    color: #1D1D1B;
+  }
+
+  .container {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  /* HEADER */
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1.5rem;
+  }
+  .header-accent { width: 4px; height: 40px; background: #3DCEC4; border-radius: 2px; flex-shrink: 0; }
+  .header h1 { font-size: 18px; font-weight: 600; color: #1D1D1B; line-height: 1.2; }
+  .header p { font-size: 12px; color: #888; margin-top: 2px; }
+
+  /* TABS */
+  .tab-nav {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 1.25rem;
+  }
+  .tab-btn {
+    font-size: 12px;
+    font-weight: 500;
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid #ddd;
+    background: #fff;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.12s;
+    font-family: inherit;
+  }
+  .tab-btn:hover:not(.active) { background: #f0f0ee; color: #1D1D1B; }
+  .tab-btn.active { background: #3DCEC4; color: #053d39; border-color: #3DCEC4; font-weight: 600; }
+  .tab-btn.highlight { border-color: #3DCEC4; color: #085041; }
+  .tab-btn.highlight.active { background: #3DCEC4; color: #053d39; }
+
+  /* PANELS */
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* CARDS */
+  .card {
+    background: #fff;
+    border: 1px solid #e8e8e6;
+    border-radius: 14px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-bottom: 8px;
+    letter-spacing: 0.03em;
+  }
+  .badge-gpt { background: #E6F1FB; color: #0C447C; }
+  .badge-art { background: #E1F5EE; color: #085041; }
+  .badge-gem { background: #EEEDFE; color: #3C3489; }
+
+  .card h3 { font-size: 15px; font-weight: 600; margin: 0 0 4px; color: #1D1D1B; }
+  .tagline { font-size: 13px; color: #888; margin: 0 0 1rem; font-style: italic; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .sub { background: #f8f8f6; border-radius: 10px; padding: 0.75rem; }
+  .sub h4 { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: #aaa; margin: 0 0 6px; }
+  .sub ul { margin: 0; padding: 0 0 0 1rem; font-size: 12px; color: #333; line-height: 1.7; }
+
+  /* OVERVIEW */
+  .concept-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 0.75rem; }
+  .concept-box { background: #f8f8f6; border-radius: 10px; padding: 1rem; }
+  .concept-box h4 { font-size: 13px; font-weight: 600; color: #1D1D1B; margin: 0 0 6px; }
+  .concept-box ul { margin: 0; padding: 0 0 0 1rem; font-size: 12px; color: #555; line-height: 1.7; }
+  .tools-label { font-size: 11px; font-weight: 600; color: #3DCEC4; margin-top: 8px; }
+
+  .demo-row { display: flex; align-items: center; gap: 10px; padding: 0.75rem 0; border-bottom: 1px solid #f0f0ee; }
+  .demo-row:last-child { border-bottom: none; }
+  .demo-num { width: 26px; height: 26px; border-radius: 50%; background: #3DCEC4; color: #053d39; font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .demo-text { flex: 1; }
+  .demo-text strong { font-size: 13px; font-weight: 600; display: block; color: #1D1D1B; }
+  .demo-text span { font-size: 11px; color: #888; }
+
+  /* COMPARE TABLE */
+  .compare-wrap { background: #fff; border: 1px solid #e8e8e6; border-radius: 14px; overflow: hidden; margin-bottom: 1rem; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; table-layout: fixed; }
+  th { font-size: 11px; font-weight: 600; text-align: left; padding: 10px 10px; color: #666; border-bottom: 1px solid #ebebeb; background: #fafaf8; }
+  th:first-child { width: 28%; }
+  td { padding: 9px 10px; border-bottom: 1px solid #f0f0ee; vertical-align: top; color: #1D1D1B; line-height: 1.4; }
+  tr:last-child td { border-bottom: none; }
+  .fl { color: #888; font-weight: 600; font-size: 11px; }
+  .yes { color: #0F6E56; } .no { color: #A32D2D; } .part { color: #854F0B; }
+  .legend { font-size: 11px; color: #aaa; margin-top: 4px; }
+
+  /* DECIDE */
+  .dec-card { background: #fff; border: 1px solid #e8e8e6; border-radius: 14px; padding: 1.1rem 1.25rem; margin-bottom: 0.75rem; }
+  .dec-card h3 { font-size: 14px; font-weight: 600; margin: 0 0 0.6rem; color: #1D1D1B; display: flex; align-items: center; gap: 8px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .dot-gpt { background: #378ADD; } .dot-art { background: #1D9E75; } .dot-gem { background: #7F77DD; }
+  .when-list { list-style: none; margin: 0; padding: 0; }
+  .when-list li { font-size: 13px; color: #1D1D1B; padding: 5px 0 5px 18px; position: relative; border-bottom: 1px solid #f5f5f3; line-height: 1.4; }
+  .when-list li:last-child { border-bottom: none; }
+  .when-list li::before { content: '→'; position: absolute; left: 0; color: #3DCEC4; font-size: 12px; top: 6px; }
+  .reality { background: #f8f8f6; border-left: 3px solid #3DCEC4; padding: 0.7rem 1rem; font-size: 12px; color: #666; line-height: 1.6; margin-top: 0.75rem; }
+
+  /* ADVISOR */
+  .advisor-intro { font-size: 13px; color: #666; margin-bottom: 1rem; line-height: 1.6; }
+  textarea {
+    width: 100%;
+    min-height: 110px;
+    padding: 12px 14px;
+    font-size: 13px;
+    font-family: inherit;
+    line-height: 1.6;
+    color: #1D1D1B;
+    background: #fafaf8;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  textarea:focus { border-color: #3DCEC4; background: #fff; }
+  textarea::placeholder { color: #bbb; font-size: 12px; }
+
+  .btn-row { margin-top: 10px; display: flex; gap: 8px; align-items: center; }
+  .btn-primary {
+    padding: 10px 22px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    background: #3DCEC4;
+    color: #053d39;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn-primary:hover { background: #29b8ae; }
+  .btn-primary:disabled { opacity: 0.5; cursor: default; }
+  .btn-secondary {
+    padding: 10px 16px;
+    font-size: 12px;
+    font-family: inherit;
+    background: transparent;
+    color: #888;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    display: none;
+  }
+  .btn-secondary:hover { background: #f0f0ee; }
+
+  .loading { margin-top: 12px; font-size: 12px; color: #aaa; font-style: italic; display: none; }
+  .dot-loader { display: inline-flex; gap: 3px; align-items: center; vertical-align: middle; }
+  .dot-loader span { width: 4px; height: 4px; background: #3DCEC4; border-radius: 50%; animation: bounce 1s infinite; }
+  .dot-loader span:nth-child(2) { animation-delay: 0.15s; }
+  .dot-loader span:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes bounce { 0%,80%,100% { transform: translateY(0); opacity: 0.4; } 40% { transform: translateY(-4px); opacity: 1; } }
+
+  .result-box {
+    margin-top: 1rem;
+    background: #f8f8f6;
+    border: 1px solid #e8e8e6;
+    border-radius: 14px;
+    padding: 1.25rem;
+    display: none;
+  }
+  .result-box.visible { display: block; }
+  .winner-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+    letter-spacing: 0.03em;
+  }
+  .result-text { font-size: 13px; line-height: 1.8; color: #1D1D1B; white-space: pre-wrap; }
+
+  /* FOOTER */
+  .footer {
+    text-align: center;
+    font-size: 11px;
+    color: #bbb;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid #ebebeb;
+    line-height: 1.6;
+  }
+  .footer a { color: #3DCEC4; text-decoration: none; }
+  .footer a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="header-accent"></div>
+    <div>
+      <h1>AI customisation tools — workshop guide</h1>
+      <p>Custom GPTs · Claude Artifacts · Gemini Gems &nbsp;·&nbsp; susannedrews.com</p>
+    </div>
+  </div>
+
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="showTab('overview',this)">Overview</button>
+    <button class="tab-btn" onclick="showTab('compare',this)">Side-by-side</button>
+    <button class="tab-btn" onclick="showTab('decide',this)">Which one?</button>
+    <button class="tab-btn" onclick="showTab('gpt',this)">Custom GPTs</button>
+    <button class="tab-btn" onclick="showTab('artifact',this)">Claude Artifacts</button>
+    <button class="tab-btn" onclick="showTab('gem',this)">Gemini Gems</button>
+    <button class="tab-btn highlight" onclick="showTab('advisor',this)">Find my tool ✦</button>
+  </div>
+
+  <!-- OVERVIEW -->
+  <div class="tab-panel active" id="tab-overview">
+    <div class="card">
+      <h3>The one distinction that changes everything</h3>
+      <p class="tagline">Two different concepts — not just three different names</p>
+      <div class="concept-row">
+        <div class="concept-box">
+          <h4>Persistent AI persona</h4>
+          <ul>
+            <li>Configure it once</li>
+            <li>Opens pre-briefed every time</li>
+            <li>Knows its role, tone &amp; knowledge</li>
+          </ul>
+          <div class="tools-label">→ Custom GPTs &amp; Gemini Gems</div>
+        </div>
+        <div class="concept-box">
+          <h4>Generated output</h4>
+          <ul>
+            <li>Describe what you need</li>
+            <li>Claude builds it live</li>
+            <li>Publish, share, embed it</li>
+          </ul>
+          <div class="tools-label">→ Claude Artifacts</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Today's three demos</h3>
+      <div class="demo-row">
+        <div class="demo-num">1</div>
+        <div class="demo-text">
+          <strong>Custom GPT — Life Coach FAQ bot</strong>
+          <span>Sarah Mitchell Coaching · answers clients 24/7 · in her voice</span>
+        </div>
+        <span class="badge badge-gpt">ChatGPT Plus</span>
+      </div>
+      <div class="demo-row">
+        <div class="demo-num">2</div>
+        <div class="demo-text">
+          <strong>Claude Artifact — Wellness quiz</strong>
+          <span>"What's your wellness score?" · embeddable on any website</span>
+        </div>
+        <span class="badge badge-art">Claude free+</span>
+      </div>
+      <div class="demo-row">
+        <div class="demo-num">3</div>
+        <div class="demo-text">
+          <strong>Gemini Gem — Daily task planner</strong>
+          <span>Solo entrepreneur · priorities · time blocks · Google Workspace</span>
+        </div>
+        <span class="badge badge-gem">Gemini Advanced</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPARE -->
+  <div class="tab-panel" id="tab-compare">
+    <div class="compare-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>Custom GPTs</th>
+            <th>Claude Artifacts</th>
+            <th>Gemini Gems</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="fl">What it is</td><td>Persistent persona</td><td>Generated interactive output</td><td>Persistent persona</td></tr>
+          <tr><td class="fl">No coding needed</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="yes">Yes</td></tr>
+          <tr><td class="fl">Upload documents</td><td class="yes">Yes — PDF, Word</td><td class="yes">Yes — in conversation</td><td class="part">Via Google Drive</td></tr>
+          <tr><td class="fl">3rd-party connect</td><td class="yes">Yes — GPT Actions</td><td class="yes">Yes — MCP connectors</td><td class="part">Google tools only</td></tr>
+          <tr><td class="fl">Publish / embed</td><td class="part">Link only</td><td class="yes">Link + embed code</td><td class="no">Org-internal only</td></tr>
+          <tr><td class="fl">Free tier</td><td class="part">Very limited</td><td class="yes">Basic free; Pro for full</td><td class="no">Requires Advanced</td></tr>
+          <tr><td class="fl">Cost (paid)</td><td>~$20 / month</td><td>~$20 / month</td><td>~€20 / month</td></tr>
+          <tr><td class="fl">Best for</td><td>Team bots, FAQ</td><td>Interactive tools, quizzes</td><td>Daily tasks + G-Suite</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="legend"><span class="yes">green = yes/full</span> &nbsp;·&nbsp; <span class="part">amber = partial</span> &nbsp;·&nbsp; <span class="no">red = no/limited</span></div>
+  </div>
+
+  <!-- DECIDE -->
+  <div class="tab-panel" id="tab-decide">
+    <div class="dec-card">
+      <h3><span class="dot dot-gpt"></span> Choose Custom GPTs when...</h3>
+      <ul class="when-list">
+        <li>You want a reusable chatbot your clients can open anytime</li>
+        <li>You need it to know your services, prices, and tone</li>
+        <li>You want all team members using the same AI assistant</li>
+        <li>Your workflow is based on ChatGPT</li>
+        <li>You need to connect to external tools via API (Actions)</li>
+      </ul>
+    </div>
+    <div class="dec-card">
+      <h3><span class="dot dot-art"></span> Choose Claude Artifacts when...</h3>
+      <ul class="when-list">
+        <li>You want an interactive tool, quiz, or calculator on your website</li>
+        <li>You need clients to use something without a login</li>
+        <li>You want to build it in minutes and publish it live</li>
+        <li>You need embed code for Squarespace, WordPress, or Notion</li>
+        <li>You want an AI-powered widget others can use</li>
+      </ul>
+    </div>
+    <div class="dec-card">
+      <h3><span class="dot dot-gem"></span> Choose Gemini Gems when...</h3>
+      <ul class="when-list">
+        <li>You live in Gmail, Drive, and Google Docs</li>
+        <li>You want daily planning or email drafting support</li>
+        <li>You're already paying for Google Workspace</li>
+        <li>You want quick recurring tasks without switching platforms</li>
+      </ul>
+    </div>
+    <div class="reality">Reality check: most professionals use all three — for different jobs. Pick one to try first, then expand.</div>
+  </div>
+
+  <!-- GPT DETAIL -->
+  <div class="tab-panel" id="tab-gpt">
+    <div class="card">
+      <span class="badge badge-gpt">OpenAI · ChatGPT Plus</span>
+      <h3>Custom GPTs</h3>
+      <p class="tagline">A pre-configured ChatGPT that knows your rules — every time, without repeating yourself</p>
+      <div class="two-col">
+        <div class="sub">
+          <h4>5 building blocks</h4>
+          <ul>
+            <li>Instructions — your system prompt</li>
+            <li>Knowledge — upload PDFs, Word docs</li>
+            <li>Capabilities — web, image, code</li>
+            <li>Actions — connect to external APIs</li>
+            <li>Starters — suggested prompts</li>
+          </ul>
+        </div>
+        <div class="sub">
+          <h4>Best for</h4>
+          <ul>
+            <li>Client FAQ bots</li>
+            <li>Team consistency</li>
+            <li>Onboarding assistants</li>
+            <li>Brand-voice writing help</li>
+            <li>Knowledge base Q&amp;A</li>
+          </ul>
+        </div>
+      </div>
+      <div class="sub" style="margin-top:8px;">
+        <h4>Limitations</h4>
+        <ul>
+          <li>ChatGPT Plus required — $20/month to create</li>
+          <li>No native website embedding (API only)</li>
+          <li>Memory starts fresh each conversation</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ARTIFACT DETAIL -->
+  <div class="tab-panel" id="tab-artifact">
+    <div class="card">
+      <span class="badge badge-art">Anthropic · Claude</span>
+      <h3>Claude Artifacts</h3>
+      <p class="tagline">Describe what you need — Claude builds it. Publish it. Embed it anywhere.</p>
+      <div class="two-col">
+        <div class="sub">
+          <h4>What Claude can build</h4>
+          <ul>
+            <li>Documents &amp; reports</li>
+            <li>HTML pages (fully working)</li>
+            <li>Interactive React apps</li>
+            <li>Charts &amp; diagrams</li>
+            <li>AI-powered apps (Claude inside)</li>
+          </ul>
+        </div>
+        <div class="sub">
+          <h4>Unique powers</h4>
+          <ul>
+            <li>Publish with one click</li>
+            <li>Embed on any website</li>
+            <li>No login needed for visitors</li>
+            <li>Persistent storage (Pro+)</li>
+            <li>MCP connectors (Slack, Asana…)</li>
+          </ul>
+        </div>
+      </div>
+      <div class="sub" style="margin-top:8px;">
+        <h4>Limitations</h4>
+        <ul>
+          <li>Not a persistent persona — no memory between conversations</li>
+          <li>AI-powered &amp; MCP features need Pro ($20/month)</li>
+          <li>Once unpublished, must create a new one to re-publish</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- GEM DETAIL -->
+  <div class="tab-panel" id="tab-gem">
+    <div class="card">
+      <span class="badge badge-gem">Google · Gemini Advanced</span>
+      <h3>Gemini Gems</h3>
+      <p class="tagline">Google's custom AI persona — and it reads your actual Gmail, Drive, and Calendar</p>
+      <div class="two-col">
+        <div class="sub">
+          <h4>Setup in 3 steps</h4>
+          <ul>
+            <li>Name your Gem</li>
+            <li>Write instructions (4–8 sentences)</li>
+            <li>Preview → Save</li>
+          </ul>
+        </div>
+        <div class="sub">
+          <h4>Unique advantage</h4>
+          <ul>
+            <li>Reads your real Gmail</li>
+            <li>Searches your Drive files</li>
+            <li>References your Calendar</li>
+            <li>No copy-paste needed</li>
+          </ul>
+        </div>
+      </div>
+      <div class="sub" style="margin-top:8px;">
+        <h4>Limitations</h4>
+        <ul>
+          <li>Requires Gemini Advanced (~€20/month)</li>
+          <li>Cannot be published publicly or embedded</li>
+          <li>Mainly useful inside the Google ecosystem</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADVISOR -->
+  <div class="tab-panel" id="tab-advisor">
+    <div class="card">
+      <h3>Describe your use case</h3>
+      <p class="tagline" style="margin-bottom:0.9rem;">Write what you want to build or solve — in your own words, any language</p>
+      <textarea id="usecase" placeholder="Examples:&#10;– I want a quiz on my website for potential clients...&#10;– I need a daily assistant that helps me plan my Gmail inbox...&#10;– I want a chatbot that answers questions about my services 24/7...&#10;– Ich möchte ein Tool für meine Webseite erstellen..."></textarea>
+      <div class="btn-row">
+        <button class="btn-primary" id="askBtn" onclick="askClaude()">Get my recommendation</button>
+        <button class="btn-secondary" id="resetBtn" onclick="resetAdvisor()">Start over</button>
+      </div>
+      <div class="loading" id="loading">Analysing your use case <span class="dot-loader"><span></span><span></span><span></span></span></div>
+    </div>
+    <div class="result-box" id="result">
+      <div id="rtag"></div>
+      <div class="result-text" id="rtext"></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    Workshop tool by <a href="https://susannedrews.com" target="_blank">Susanne Drews</a> · AI Consultant &amp; Educator · Málaga<br>
+    mail@susannedrews.com · susannedrews.com
+  </div>
+
+</div>
+
+<script>
+function showTab(id, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ── SCORING RULES ──────────────────────────────────────────────
+// Each keyword list adds points to one of the three tools.
+// The tool with the highest score wins.
+
+const rules = {
+  artifact: {
+    keywords: [
+      // website / embedding
+      'website','web','webseite','landing','landingpage','landing page',
+      'embed','einbetten','publish','veröffentlichen','online stellen',
+      'homepage','blog','squarespace','wordpress','wix','notion',
+      // interactive tools
+      'quiz','calculator','rechner','tool','widget','app','mini-app',
+      'interactive','interaktiv','form','formular','checklist','checkliste',
+      'dashboard','visuali','chart','diagram','diagramm',
+      // public / no login
+      'public','öffentlich','without login','ohne login','ohne account',
+      'share link','link teilen','anyone can','jeder kann',
+      // content types
+      'report','bericht','proposal','angebot','template','vorlage',
+      'document','dokument','infographic','infografik','poster','flyer',
+      'svg','html','react','code'
+    ],
+    responses: [
+      {
+        tag: 'Claude Artifact — Anthropic',
+        tagClass: 'badge-art',
+        title: 'I recommend: Claude Artifact',
+        text: 'A Claude Artifact is perfect for this. You describe what you want, Claude builds it — and you can publish it with one click and share a link that anyone can open without logging in. You can also embed it directly on your website (Squarespace, WordPress, Notion, anywhere).\n\nNext step: Open claude.ai, start a new chat, and describe your tool in plain language. The Artifact appears in a side panel instantly.',
+        also: 'Also consider: If you also need a persistent assistant that remembers your business rules across every conversation, a Custom GPT could complement your Artifact well.'
+      }
+    ]
+  },
+  gpt: {
+    keywords: [
+      // chatbot / assistant
+      'chatbot','chat bot','bot','assistant','assistent','faq','frequently asked',
+      'customer','kunde','kunden','client','klient','support',
+      // team / consistency
+      'team','consistent','konsistent','always','immer','every time','jedes mal',
+      'persona','voice','tone','brand','marke','onboarding',
+      // knowledge base
+      'knowledge','wissen','document','dokument','pdf','upload','faq',
+      'product','produkt','catalogue','katalog','price','preis','service',
+      // chatgpt ecosystem
+      'chatgpt','openai','gpt','gpt store',
+      // reusable persona
+      'reusable','wiederverwendbar','pre-configured','vorkonfiguriert',
+      'briefed','instructions','anweisungen','rules','regeln',
+      // linkedin / social writing assistant
+      'linkedin','post','social media','content','writing','schreiben',
+      'newsletter','email','e-mail','copy','text','caption'
+    ],
+    responses: [
+      {
+        tag: 'Custom GPT — OpenAI',
+        tagClass: 'badge-gpt',
+        title: 'I recommend: Custom GPT',
+        text: 'A Custom GPT is the right choice here. You configure it once with your instructions, tone, and any documents (FAQ, price list, brand guide) — and from then on it behaves consistently every single time someone opens it. You can share it via link with your team or clients.\n\nNext step: Go to chat.openai.com → Explore GPTs → Create. Describe what your assistant should do in one sentence and the builder does the rest.',
+        also: 'Also consider: If you also want to put something interactive on your website (like a quiz or calculator), a Claude Artifact handles that part better.'
+      }
+    ]
+  },
+  gem: {
+    keywords: [
+      // google tools
+      'gmail','google','drive','google drive','docs','google docs',
+      'calendar','google calendar','google workspace','g suite','gsuite',
+      'sheets','google sheets','meet','google meet',
+      // personal / daily
+      'daily','täglich','every day','jeden tag','morning','morgen',
+      'personal','persönlich','myself','für mich','my own','meine eigene',
+      'routine','planning','planung','schedule','plan my day','tag planen',
+      // productivity
+      'email reply','email antwort','reply','antworten','summarise','zusammenfassen',
+      'inbox','posteingang','draft','entwurf','quick','schnell',
+      'recurring','wiederkehrend','same task','gleiche aufgabe',
+      // gem specific
+      'gem','gemini'
+    ],
+    responses: [
+      {
+        tag: 'Gemini Gem — Google',
+        tagClass: 'badge-gem',
+        title: 'I recommend: Gemini Gem',
+        text: 'A Gemini Gem fits perfectly for this. You configure it once with a few sentences of instructions — and every time you open it, it already knows its job. The big advantage: if you work in Google Workspace, your Gem can read your actual Gmail, search your Drive files, and check your Calendar. No copy-paste needed.\n\nNext step: Go to gemini.google.com → Gems → New Gem. Write 4–6 sentences describing what your assistant should do, then save it.',
+        also: 'Also consider: Gems cannot be shared publicly or embedded on websites. If you need clients to access something externally, a Claude Artifact or Custom GPT works better for that part.'
+      }
+    ]
+  }
+};
+
+const fallback = {
+  tag: '',
+  tagClass: '',
+  title: 'Here is my thinking:',
+  text: 'Based on what you described, it could go a few ways. If you want to build something interactive for a website (quiz, calculator, tool) — go with a Claude Artifact. If you need a reusable AI assistant with your knowledge and tone — go with a Custom GPT. If your daily work lives in Gmail, Drive, and Google Docs — go with a Gemini Gem.\n\nCan you tell me a bit more? For example: is this for clients or for your own workflow? Does it need to live on a website?',
+  also: ''
+};
+
+function analyseText(text) {
+  const t = text.toLowerCase();
+  const scores = { artifact: 0, gpt: 0, gem: 0 };
+
+  for (const [tool, data] of Object.entries(rules)) {
+    for (const kw of data.keywords) {
+      if (t.includes(kw)) scores[tool] += 1;
+    }
+  }
+
+  const max = Math.max(...Object.values(scores));
+  if (max === 0) return null; // no match → fallback
+
+  // if two tools tie, prefer artifact (most workshop-relevant)
+  if (scores.artifact === max) return 'artifact';
+  if (scores.gpt === max) return 'gpt';
+  return 'gem';
+}
+
+function askClaude() {
+  const text = document.getElementById('usecase').value.trim();
+  if (!text) { document.getElementById('usecase').focus(); return; }
+
+  document.getElementById('askBtn').disabled = true;
+  document.getElementById('loading').style.display = 'block';
+  document.getElementById('result').classList.remove('visible');
+  document.getElementById('resetBtn').style.display = 'none';
+
+  // Simulate a short thinking delay for UX
+  setTimeout(() => {
+    const winner = analyseText(text);
+    const res = winner ? rules[winner].responses[0] : fallback;
+
+    const tagEl = document.getElementById('rtag');
+    if (res.tagClass) {
+      tagEl.innerHTML = '<span class="winner-tag ' + res.tagClass + '">' + res.tag + '</span><br>';
+    } else {
+      tagEl.innerHTML = '';
+    }
+
+    const body = res.text + (res.also ? '\n\n' + res.also : '');
+    document.getElementById('rtext').textContent = body;
+    document.getElementById('result').classList.add('visible');
+    document.getElementById('resetBtn').style.display = 'inline-block';
+
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('askBtn').disabled = false;
+  }, 900);
+}
+
+function resetAdvisor() {
+  document.getElementById('usecase').value = '';
+  document.getElementById('result').classList.remove('visible');
+  document.getElementById('resetBtn').style.display = 'none';
+  document.getElementById('usecase').focus();
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+    if (document.getElementById('tab-advisor').classList.contains('active')) askClaude();
+  }
+});
+</script>
+</body>
+</html>
